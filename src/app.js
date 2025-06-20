@@ -3,15 +3,43 @@ const express = require('express');//from node modules
 const app = express();//an express js application __instance of an express js application ______ an web server
 
 //sending response type data in response
-app.get('/user', (req, res) => {
-    res.send({
-        firstname: "Asish", 
-        lastname: "kumar"
-    })
-})
+// app.get('/user', (req, res) => {
+//     res.send({
+//         firstname: "Asish",
+//         lastname: "kumar"
+//     })
+// })
+// /abc , /ac
+// app.get('/abc', (req, res) => {
+//   res.send({
+//     firstname: 'Asish',
+//     lastname: 'kumar'
+//   })
+// })
+// //  /ac compulsory b should be included and /abc /abbbc /abcc(x)
+// app.get('/abc', (req, res) => {
+//     res.send({
+//       firstname: 'Asish',
+//       lastname: 'kumar'
+//     })
+//   })
 
-app.post("/user", (req, res) => {
-    res.send("Data Succesfully saved to database");
+
+// app.post("/user", (req, res) => {
+//     res.send("Data Succesfully saved to database");
+// })
+
+
+
+app.get('/user', (req, res) => {
+    //req.query print value from key-value
+    //req.params used for consoling params 
+    //"/user/:userId/:name" userid and name are params 
+  console.log(req.query)
+  res.send({
+    firstname: 'Asish',
+    lastname: 'kumar'
+  })
 })
 
 
