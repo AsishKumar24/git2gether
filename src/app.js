@@ -54,6 +54,32 @@ app.get('/feed', async (req, res) => {
   }
 })
 
+//find by id and delete
+app.delete('/user', async (req, res) => {
+  const userId = req.body.userID
+  try {
+    if (userId) {
+      await User.findByIdAndDelete(userId)
+      res.send('deletd the : ' + userId)
+    } else {
+      res.send('not able to delete')
+    }
+  } catch (error) {
+    res.status(404).send('error getting userId')
+  }
+})
+
+//update the data of the user
+app.patch('/user', async (req, res) => {
+  const id = req.body.userID
+  const updateInfo = req.body
+  try {
+    await User.findByIdAndUpdate(id , updateInfo)
+    res.send('updated the document successfully : ')
+  } catch (error) {
+    res.status(404).send('error updating user')
+  }
+})
 connectDB()
   .then(() => {
     console.log('connection established with database')
