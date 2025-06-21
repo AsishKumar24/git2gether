@@ -25,7 +25,7 @@ app.post('/signup', async (req, res) => {
     await user.save() //this would be a promise obj so save use await (in mongo db)
     res.send('user signed up successfully')
   } catch (error) {
-    res.status(500).send('not updated or signed up' + error.message)
+    res.status(500).send('not updated or signed up ' + error.message)
   }
 })
 // get user by email (any user)
@@ -74,7 +74,10 @@ app.patch('/user', async (req, res) => {
   const id = req.body.userID
   const updateInfo = req.body
   try {
-    await User.findByIdAndUpdate(id , updateInfo)
+    await User.findByIdAndUpdate(id, updateInfo, {
+      returnDocument : "after",
+      runValidators : true,
+    })
     res.send('updated the document successfully : ')
   } catch (error) {
     res.status(404).send('error updating user')
