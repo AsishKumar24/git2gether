@@ -1,108 +1,66 @@
-const express = require('express');//from node modules
-
-const app = express();//an express js application __instance of an express js application ______ an web server
-
-//sending response type data in response
-// app.get('/user', (req, res) => {
-//     res.send({
-//         firstname: "Asish",
-//         lastname: "kumar"
-//     })
-// })
-// /abc , /ac
-// app.get('/abc', (req, res) => {
-//   res.send({
-//     firstname: 'Asish',
-//     lastname: 'kumar'
-//   })
-// })
-// //  /ac compulsory b should be included and /abc /abbbc /abcc(x)
-// app.get('/abc', (req, res) => {
-//     res.send({
-//       firstname: 'Asish',
-//       lastname: 'kumar'
-//     })
-//   })
-
-
-// app.post("/user", (req, res) => {
-//     res.send("Data Succesfully saved to database");
-// })
-
-
-
-// app.get('/user', (req, res) => {
-//     //req.query print value from key-value
-//     //req.params used for consoling params
-//     //"/user/:userId/:name" userid and name are params
-//   console.log(req.query)
-//   res.send({
-//     firstname: 'Asish',
-//     lastname: 'kumar'
-//   })
-// })
-
-
-//request , response handler
-
-//this below is a wildcard code
-//use can be get or post
-
-// app.use('/', (req, res) => {
-//   res.send('Asish Kumar')
-// })
-
-// app.use('/hello/2', (req, res) => {
-//   res.send('hello from  server')
-// })
-
-// app.use('/hello', (req, res) => {
-//   res.send('hello from the server')
-// })
-
-//if used "/" will never listen to any other /xyz
-//anything comes after / it wont listen to any other handlers , it will always listen to the initial response
-//for example "/" anything after this will be listened by the handler here
-//for example "/hello" "/hello/xyz" will listen to "/hello"
-//there is a catch "/hello" , "/hellloxysa" this will become another string so / this is importtant
-app.listen(3000, () => {
-  console.log('successfully listening on port 3000')
-})
-//port no to listening from a express server on port 3000
-
-//there can be multiple route handler
-//res.send is necessary otherwise it would be stuck in an infinite loop by the client
-
-// app.use('/', (req, res, next) => {
-//   next();
-// })
-
-// app.use("/user",
-//   (req, res, next) => {
-//     //if there are no response from first cb then next will be used
-    
-//     //res.send("hi 1");   //this is not the correct way to o/p because js engine would throw error
-//     next();
-
-    
-//   },
-//   (req, res) => {
-//     res.send("hello2");
-//     //next(); //
-//   }
-// );
-
-app.use("/user", (req, res) => {
-  res.send("asis")
-});
-app.use('/', ( req, res, next) => {
-  res.send("asish")
-  // next();
-})
-
 // *
 // ?
 // !
-// TODO 
-// normal 
+// TODO
+// normal
+const express = require('express')
+const { connectDB } = require('./config/database')
+const app = express()
+const { User } = require('./models/user')
+// ? A middleware for conversion of any body sent through postman in terms os json to a js object
+app.use(express.json())
 
+app.post('/signup', async (req, res) => {
+  //* to do dynamically by the help of postman using body in json
+  //console.log(req.body)
+
+  //creating a new instance of User model
+  //! this was hard coding way and should not be done
+  // const user = new User({
+  //   firstName: 'Asisha',
+  //   lastName: 'Kumar'
+  // })
+  const user = new User(req.body)
+  try {
+    await user.save() //this would be a promise obj so save use await (in mongo db)
+    res.send('user signed up successfully')
+  } catch (error) {
+    res.status(500).send('not updated or signed up' + error.message)
+  }
+})
+// get user by email (any user)
+app.get('/user', async (req, res) => {
+  const userName = req.body.firstName
+  //to find the documents containing this email id
+  const doc = await User.find({ firstName: userName })
+  try {
+    if (doc) {
+      res.send(doc)
+    } else {
+      res.status(404).send('not able to find the user')
+    }
+  } catch (error) {
+    res.send('error fetching')
+  }
+})
+
+//feed Api - GET /feed - get all the users in the database
+app.get('/feed', async (req, res) => {
+  try {
+    const users = await User.find({})
+    res.send(users)
+  } catch (error) {
+    res.status(404).send('not able to find the document that')
+  }
+})
+
+connectDB()
+  .then(() => {
+    console.log('connection established with database')
+    app.listen(3000, () => {
+      console.log('listening to port 3000')
+    })
+  })
+  .catch(error => {
+    console.error('Error connectiong to Database')
+  })
