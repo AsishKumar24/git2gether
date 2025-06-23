@@ -100,7 +100,7 @@ app.patch('/user/:userID', async (req, res) => {
     })
     res.send('updated the document successfully : ')
   } catch (error) {
-    console.log(error)
+   // console.log(error)
     res.status(404).send('error updating user')
   }
 })
