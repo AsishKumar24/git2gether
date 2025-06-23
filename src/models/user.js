@@ -42,7 +42,12 @@ const userSchema = new Schema(
       default: 'This is a default description of a user'
     },
     skills: {
-      type: [String]
+      type: [String],
+      validate: {
+        validator: function (value) {
+          return value.length <= 15
+        }
+      }
     },
     photoUrl: {
       type: String,

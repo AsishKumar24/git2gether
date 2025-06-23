@@ -70,16 +70,37 @@ app.delete('/user', async (req, res) => {
 })
 
 //update the data of the user
-app.patch('/user', async (req, res) => {
-  const id = req.body.userID
+app.patch('/user/:userID', async (req, res) => {
+  const userID = req.params?.userID
   const updateInfo = req.body
+
   try {
-    await User.findByIdAndUpdate(id, updateInfo, {
-      returnDocument : "after",
-      runValidators : true,
+    //? there must be only minimal things once entered it wont be able to change until the account exist
+
+    const Allowed_updates = [
+      'about',
+      'gender',
+      'about',
+      'age',
+      'skills',
+      'photoUrl'
+    ]
+
+    const isUpdateAllowed = Object.keys(updateInfo).every(key =>
+      Allowed_updates.includes(key)
+    )
+    if (!isUpdateAllowed)
+    {
+      throw new Error("updation not Allowed")
+    }
+
+    await User.findByIdAndUpdate(userID, updateInfo, {
+      returnDocument: 'after',
+      runValidators: true
     })
     res.send('updated the document successfully : ')
   } catch (error) {
+    console.log(error)
     res.status(404).send('error updating user')
   }
 })
