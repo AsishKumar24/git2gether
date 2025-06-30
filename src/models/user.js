@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const { Schema } = mongoose
-const validator = require("validator")
+const validator = require('validator')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 const userSchema = new Schema(
   {
@@ -20,11 +22,9 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: true,
-      validate(value)
-      {
-        if (!validator.isStrongPassword(value))
-        {
-          throw new Error("the password was not strong enough : " + value)
+      validate (value) {
+        if (!validator.isStrongPassword(value)) {
+          throw new Error('the password was not strong enough : ' + value)
         }
       }
     },
@@ -50,7 +50,7 @@ const userSchema = new Schema(
       default: 'This is a default description of a user'
     },
     skills: {
-      type: [String],
+      type: [String]
       // validate: {
       //   validator: function (value) {
       //     return value.length <= 10
@@ -60,12 +60,10 @@ const userSchema = new Schema(
     photoUrl: {
       type: String,
       default: 'https://geographyandyou.com/images/user-profile.png',
-      validate(value) {
-        if (!validator.isURL(value))
-        {
-          throw new Error("Invalid Photo URL")
+      validate (value) {
+        if (!validator.isURL(value)) {
+          throw new Error('Invalid Photo URL')
         }
-        
       }
     }
   },
@@ -73,6 +71,30 @@ const userSchema = new Schema(
     timestamps: true
   }
 )
+
+//*mongoose method models
+//only a  method to expire the token , cookie can also be expired
+//use of cookies (add the token tio cookie) and send back to the user as the browser saves token
+//this will be stored in key:cookie (value pair)
+
+userSchema.methods.getJWT = async function () {
+  const user = this
+  const token = await jwt.sign(
+    { _id: user._id },
+    /* a secret key*/ 'AsishKumar',
+    {
+      expiresIn: '1h'
+    }
+  )
+  return token
+}
+//* offloading password validation directly through here (a login Method)
+userSchema.methods.validatePassword = async function (passwordInputUser) {
+  const user = this
+  const passwordHash = user.password
+  const isPasswordValid = await bcrypt.compare(passwordInputUser, passwordHash)
+  return isPasswordValid
+}
 
 //* Now we create a mongoose model
 

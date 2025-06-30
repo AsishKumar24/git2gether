@@ -12,6 +12,7 @@ const { validateSignUpData } = require('./utils/validation')
 const bcrypt = require('bcrypt')
 const cookieParser = require('cookie-parser')
 const jwt = require('jsonwebtoken')
+const { userAuth } = require('./middlewares/auth')
 
 // ? A middleware for conversion of any body sent through postman in terms os json to a js object
 app.use(express.json())
@@ -61,16 +62,10 @@ app.post('/login', async (req, res) => {
     if (!user) {
       throw new Error('Invalid Credentials')
     }
-    const isPasswordvalid = await bcrypt.compare(password, user.password)
+    const isPasswordvalid = await user.validatePassword(password)
     if (isPasswordvalid) {
       //use of JWT (create a JWT token)
-      const token = await jwt.sign(
-        { _id: user._id },
-        /* a secret key*/ 'AsishKumar'
-      )
-      //use of cookies (add the token tio cookie) and send back to the user as the browser saves token
-
-      //this will be stored in key:cookie (value pair)
+      const token = await user.getJWT()
       res.cookie('token', token)
       res.send('login successfully')
     } else {
@@ -84,27 +79,12 @@ app.post('/login', async (req, res) => {
 
 //profile API will get the profile of user
 
-app.get('/profile', async (req, res) => {
+app.get('/profile', userAuth, async (req, res) => {
   try {
-    const cookies = req.cookies
-    const { token } = cookies
-    if (!token) {
-      throw new Error('there is no token')
-    }
-    //validate my token
-    const decodedSentHidden = await jwt.verify(token, 'AsishKumar') //! same as the secret key u sent above
-    const { _id } = decodedSentHidden
-    const user = await User.findById(_id)
-    if (!user) {
-      throw new Error('error finding the id __profile may not exist')
-    }
-
-    //console.log(decodedSentHidden)
-    //console.log(cookies)
-    //console.log(user)
+    const user = req.user
     res.send(user)
   } catch (error) {
-    res.status(500).send('ERROR : ' + error.message)
+    res.status(400).send('ERROR: ' + error.message)
   }
 })
 // get user by email (any user)
