@@ -64,5 +64,13 @@ authRouter.post('/login', async (req, res) => {
     res.status(400).send('Error : ' + error.message)
   }
 })
-module.exports = authRouter
 
+//logout
+authRouter.post('/logout', async (req, res) => {
+  //logic behind this is delete the token
+  res.cookie('token', null, {
+    expires: new Date(Date.now())
+  })
+    res.send("cookie expired and the user is logged out")
+})
+module.exports = authRouter
