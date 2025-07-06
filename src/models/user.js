@@ -91,12 +91,12 @@ userSchema.methods.getJWT = async function () {
 //* offloading password validation directly through here (a login Method)
 userSchema.methods.validatePassword = async function (passwordInputUser) {
   const user = this
-  const passwordHash = user.password
+  const passwordHash = this.password
   const isPasswordValid = await bcrypt.compare(passwordInputUser, passwordHash)
   return isPasswordValid
 }
 
-//* Now we create a mongoose model
+//* Now we create a mongoose model and name should be capital
 
 const User = mongoose.model('User', userSchema)
 //*  -> Collection will be "users" (Mongoose pluralizes)

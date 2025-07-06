@@ -11,8 +11,8 @@ we will use expressrouter
 - PATCH/profile/edit
 - PATCH/profile/password
 ## connectionrequestRouter
-- POST/request/send/interested/:userId (id of the user that u are interested)
-- POST/request/send/ignored/:userId
+- POST/request/send/:status/:userId 
+
 - POST/request/review/accepted/:requestId
 - POST/request/review/rejected/:requestid
 ## userRelatedRouter
@@ -26,6 +26,6 @@ status : ignored / interested /accepted / rejected
 
 
 
- explore tinder API
- create a list all api you can think of in Dev Tinder
- gorup multiple router under respective routers
+ -explore tinder API
+ -create a list all api you can think of in Dev Tinder
+ -gorup multiple router under respective routers
