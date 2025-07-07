@@ -12,9 +12,7 @@ we will use expressrouter
 - PATCH/profile/password
 ## connectionrequestRouter
 - POST/request/send/:status/:userId 
-
-- POST/request/review/accepted/:requestId
-- POST/request/review/rejected/:requestid
+- POST/request/review/:status/:requestId
 ## userRelatedRouter
 - GET/user/connections
 - GET/user/requests/received

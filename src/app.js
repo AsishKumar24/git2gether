@@ -12,15 +12,16 @@ const cookieParser = require('cookie-parser')
 app.use(express.json())
 app.use(cookieParser()) //it act as cookie parser whenever the user wants to do something with its account m, he can parse it through this middleware with all the fields
 
-
 //* importing all the router from routes
 const authRouter = require('./routes/auth')
 const reqRouter = require('./routes/connection_request')
 const profileRouter = require('./routes/profile')
+const userRouter = require('./routes/user')
 
 app.use('/', authRouter)
 app.use('/', reqRouter)
 app.use('/', profileRouter)
+app.use('/', userRouter)
 
 connectDB()
   .then(() => {

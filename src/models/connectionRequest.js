@@ -5,11 +5,13 @@ const connectionRquestSchema = new Schema(
   {
     fromUserId: {
       type: Schema.Types.ObjectId,
-      required: true
+      required: true,
+      ref: 'User'
     },
     toUserId: {
       type: Schema.Types.ObjectId,
-      required: true
+      required: true,
+      ref: 'User'
     },
     status: {
       type: String,
@@ -31,6 +33,8 @@ const connectionRquestSchema = new Schema(
 // "Hey, this field will store an ObjectId value"
 // ✅ It's a SchemaType — a configuration, not a value.
 
+//*MongoDB can use a B-Tree structure to jump to the correct value — like binary search — and return the result in milliseconds.
+//? 1 means ascending order and -1 means descending order
 connectionRquestSchema.index({ fromUserId: 1, toUserId: 1 })
 
 connectionRquestSchema.pre('save', function (next) {
@@ -39,6 +43,7 @@ connectionRquestSchema.pre('save', function (next) {
   if (connectionRequest.fromUserId.equals(connectionRequest.toUserId)) {
     throw new Error('Cannot send connection request to yourself!')
   }
+  //a middleware so its comulsory to keep it here
   next()
 })
 
