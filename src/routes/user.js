@@ -26,6 +26,7 @@ userRouter.get('/user/connections', userAuth, async (req, res) => {
     const loggedInUser = req.user
     //ravi=>anjali = accepted
     //anjali=>anyone => accepted (we just want to find what are the request related to anjali )
+
     const connectionRequest = await ConnectionRequestModel.find({
       $or: [
         { toUserId: loggedInUser._id, status: 'accepted' },
@@ -59,6 +60,12 @@ userRouter.get('/feed', userAuth, async (req, res) => {
     //todo : user should see all the cards except
     //his own , his connection accepted cards, the crad of the ignored pprofile , already sent the connection request
     const loggedInUser = req.user
+      //pages that needed to be in pagination
+      ///feed?page=x&limit=y (a query method)
+    const page = parseInt(req.query.page) || 1
+    let limit = parseInt(req.query.limit) || 10
+    limit = limit > 50 ? 50 : limit
+    const skip = (page - 1) * limit
     //find all the connection requests (sent + Recieved)
     const connectionRequest = await ConnectionRequestModel.find({
       $or: [{ toUserId: loggedInUser._id }, { fromUserId: loggedInUser._id }]
@@ -78,7 +85,10 @@ userRouter.get('/feed', userAuth, async (req, res) => {
         { _id: { $nin: Array.from(hideUsersFromFeed) } },
         { _id: { $ne: loggedInUser._id } }
       ]
-    }).select(USER_SAFE_DATA)
+    })
+      .select(USER_SAFE_DATA)
+      .skip(skip)
+      .limit(limit)
 
     res.json({ users })
   } catch (error) {
@@ -86,3 +96,9 @@ userRouter.get('/feed', userAuth, async (req, res) => {
   }
 })
 module.exports = userRouter
+//! pagination
+// /feed?page=1&limit=10 => 1-10 => .skip(0) & .limit(10)
+// /feed?page=2&limit=10 => 11-20 => .skip(10) & .limit(10)
+// /feed?page=3&limit=10 => 21-30 => .skip(20) & .limit(10)
+// /feed?page=4&limit=10 => 21-30 => .skip(20) & .limit(10)
+// skip = (page-1)*limit;
