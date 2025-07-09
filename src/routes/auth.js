@@ -32,8 +32,15 @@ authRouter.post('/signup', async (req, res) => {
       emailId
     })
 
-    await user.save() //this would be a promise obj so save use await (in mongo db)
-    res.send('user signed up successfully')
+    const savedUser = await user.save() //this would be a promise obj so save use await (in mongo db)
+
+    const token = await savedUser.getJWT()
+
+    res.cookie('token', token, {
+      expires: new Date(Date.now() + 8 * 3600000)
+    })
+
+    res.json({ message: 'User Added successfully!', data: savedUser })
   } catch (error) {
     res.status(500).send('ERROR : ' + error.message)
   }
@@ -71,6 +78,6 @@ authRouter.post('/logout', async (req, res) => {
   res.cookie('token', null, {
     expires: new Date(Date.now())
   })
-    res.send("cookie expired and the user is logged out")
+  res.send('cookie expired and the user is logged out')
 })
 module.exports = authRouter
