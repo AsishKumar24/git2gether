@@ -1,6 +1,6 @@
 # 💡 Git2gether
 
-> A Bumble-inspired platform for developers to connect, collaborate, and grow — built with Node.js, Express, and MongoDB.
+> A Tinder-inspired platform for developers to connect, collaborate, and grow — built with Node.js, Express, and MongoDB.
 
 ## 📦 Project Info
 
